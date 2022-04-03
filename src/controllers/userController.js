@@ -42,7 +42,6 @@ const createUser = async (req, res) => {
          }
 
         //Checking if user entered a valid phone or not
-        let phone = data.phone
         let validatephone = function (phone) {
             return /^([+]\d{2})?\d{10}$/.test(phone)
         }
