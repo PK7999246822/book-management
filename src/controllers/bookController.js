@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const BookModel = require("../models/bookModel")
 const UserModel = require("../models/userModel")
 const ReviewModel = require("../models/reviewModel")
@@ -6,6 +8,10 @@ const ReviewModel = require("../models/reviewModel")
 const isValid = function (value) {
     if (typeof (value) === undefined || typeof (value) === null) { return false }
     if (typeof (value) === "string" && (value).trim().length > 0) { return true }
+}
+//Creating a validation function for Object Id
+const isValidObjectId = function (objectId){
+    return mongoose.Types.ObjectId.isValid(objectId)
 }
 
 //=============================================================================================================================================//
@@ -40,11 +46,7 @@ const createBook = async (req, res) => {
          }
 
         //Checking if User Id is a valid type Object Id or not
-        let UserId = data.userId
-        let validateUserId = function (UserId) {
-            return /^[a-f\d]{24}$/.test(UserId)
-        }
-        if (!validateUserId(UserId)){
+        if (!isValidObjectId(UserId)){
         return res.status(400).send({status: false , message: `${UserId} is not valid type user Id`})
         }
 
@@ -126,10 +128,8 @@ const getBooks = async (req , res) => {
         //If any filter is present
         if (Object.keys(queryParams) != 0) {
         const {userId , category , subcategory} = queryParams
-        let validateUserId = function (UserId) {
-            return /^[a-f\d]{24}$/.test(UserId)
-        }
-        if (isValid(userId) && validateUserId(userId)) {
+        
+        if (isValid(userId) && isValidObjectId(userId)) {
             filterQuery['userId'] = userId
             }
 
@@ -173,6 +173,12 @@ const getBooks = async (req , res) => {
 const getBookById = async (req , res) => {
     try {
         let book_Id = req.params.bookId
+
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
+
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) {
@@ -222,6 +228,10 @@ const getBookById = async (req , res) => {
 const updateBook = async (req , res) => {
     try {
         let book_Id = req.params.bookId
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) return res.status(404).send({ status: false, message: "Book does not exists" })
@@ -279,6 +289,12 @@ const updateBook = async (req , res) => {
 const deleteBook = async (req, res) =>  {
     try {
         let book_Id = req.params.bookId
+
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
+
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) return res.status(404).send({ status: false, message: "Book does not exists" })

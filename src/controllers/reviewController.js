@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+
 const BookModel = require("../models/bookModel")
 const UserModel = require("../models/userModel")
 const ReviewModel = require("../models/reviewModel")
@@ -8,6 +10,10 @@ const isValid = function (value) {
     if (typeof (value) === "string" && (value).trim().length > 0) { return true }
     if (typeof (value) === "number" && (value).toString().length > 0) { return true }
 }
+//Creating a validation function for Object Id
+const isValidObjectId = function (objectId){
+    return mongoose.Types.ObjectId.isValid(objectId)
+}
 
 //===============================================================================================================================================================================================================//
 
@@ -15,6 +21,12 @@ const isValid = function (value) {
 const createReview = async (req , res) => {
     try {
         let book_Id = req.params.bookId
+
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
+
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) return res.status(404).send({ status: false, message: "Book does not exists" })
@@ -33,13 +45,6 @@ const createReview = async (req , res) => {
 
         if (!isValid(bookId)) {
             data['bookId'] = book_Id
-             }
-             let BookId = data.bookId
-             let validateBookId = function (BookId) {
-                 return /^[a-f\d]{24}$/.test(BookId)
-             }
-             if (!validateBookId(BookId)){
-             return res.status(400).send({status: false , message: `${BookId} is not valid type user Id`})
              }
 
         let guestId = "Guest"
@@ -103,6 +108,12 @@ const createReview = async (req , res) => {
 const updateReview = async (req, res) =>  {
     try {
         let book_Id = req.params.bookId
+
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
+
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) return res.status(404).send({ status: false, message: "Book does not exists" })
@@ -112,6 +123,11 @@ const updateReview = async (req, res) =>  {
         if (is_Deleted == true) return res.status(404).send({ status: false, message: "Book is already deleted" })
 
         let review_Id = req.params.reviewId
+        //Checking if review Id is a valid type Object Id or not
+        if (!isValidObjectId(review_Id)){
+            return res.status(400).send({status: false , message: `${review_Id} is not valid type user Id`})
+            }
+            
         //Validate: The reviewId is valid or not.
         let Review = await ReviewModel.findById(review_Id)
         if (!Review) return res.status(404).send({ status: false, message: "Review does not exists" })
@@ -152,6 +168,12 @@ const updateReview = async (req, res) =>  {
 const deleteReview = async (req, res) =>  {
     try {
         let book_Id = req.params.bookId
+
+        //Checking if book Id is a valid type Object Id or not
+        if (!isValidObjectId(book_Id)){
+            return res.status(400).send({status: false , message: `${book_Id} is not valid type user Id`})
+            }
+
         //Validate: The bookId is valid or not.
         let Book = await BookModel.findById(book_Id)
         if (!Book) return res.status(404).send({ status: false, message: "Book does not exists" })
@@ -161,6 +183,12 @@ const deleteReview = async (req, res) =>  {
         if (is_Deleted == true) return res.status(404).send({ status: false, message: "Book is already deleted" })
 
         let review_Id = req.params.reviewId
+
+        //Checking if review Id is a valid type Object Id or not
+        if (!isValidObjectId(review_Id)){
+            return res.status(400).send({status: false , message: `${review_Id} is not valid type user Id`})
+            }
+
         //Validate: The reviewId is valid or not.
         let Review = await ReviewModel.findById(review_Id)
         if (!Review) return res.status(404).send({ status: false, message: "Review does not exists" })
